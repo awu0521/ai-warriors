@@ -1,82 +1,85 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+'use client'
+
+import { useState, useEffect } from 'react'
 
 export default function Home() {
+  const [displayText, setDisplayText] = useState('')
+  const [assignments, setAssignments] = useState([{ course: '', name: '', deadline: '', hours: '' }])
+  const fullText = 'How Cooked Are You?'
+
+  useEffect(() => {
+    let index = 0
+    const timer = setInterval(() => {
+      if (index <= fullText.length) {
+        setDisplayText(fullText.slice(0, index))
+        index++
+      } else {
+        clearInterval(timer)
+      }
+    }, 100)
+
+    return () => clearInterval(timer)
+  }, [])
+
+  const addAssignment = () => {
+    setAssignments([...assignments, { course: '', name: '', deadline: '', hours: '' }])
+  }
+
+  const deleteAssignment = (index: number) => {
+    if (assignments.length > 1) {
+      setAssignments(assignments.filter((_, i) => i !== index))
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      {/* Hero Section */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">Hackathon Boilerplate</h1>
-          <p className="text-xl text-gray-600 mb-8">
-            A ready-to-use Next.js + Tailwind CSS starter for your next hackathon project. Start building amazing things
-            in minutes!
-          </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Button size="lg" asChild>
-              <Link href="/about">Get Started</Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <a href="https://nextjs.org/docs" target="_blank" rel="noopener noreferrer">
-                View Docs
-              </a>
-            </Button>
-          </div>
-        </div>
-
-        {/* Features Grid */}
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <FeatureCard
-            title="⚡ Fast Setup"
-            description="Get started in seconds with npm install and npm run dev. No complex configuration needed."
-          />
-          <FeatureCard
-            title="🎨 Tailwind CSS"
-            description="Beautiful, responsive designs with utility-first CSS. No need to write custom stylesheets."
-          />
-          <FeatureCard
-            title="🚀 Next.js Power"
-            description="Full-stack framework with API routes, server components, and optimized performance."
-          />
-          <FeatureCard
-            title="📱 Mobile First"
-            description="Responsive by default. Your app looks great on all devices out of the box."
-          />
-          <FeatureCard
-            title="🔧 Developer Friendly"
-            description="Hot reload, TypeScript support, and excellent error messages for fast development."
-          />
-          <FeatureCard
-            title="☁️ Easy Deploy"
-            description="Deploy to Vercel with one click. Your app goes live in minutes, not hours."
-          />
-        </div>
-
-        {/* Quick Start Section */}
-        <div className="mt-20 max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-8">Quick Start</h2>
-          <div className="bg-gray-900 text-gray-100 rounded-lg p-6 font-mono text-sm">
-            <div className="mb-2">
-              <span className="text-gray-500"># Install dependencies</span>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 p-8">
+      <h1 className="text-6xl font-bold text-white mb-12">
+        {displayText}
+        <span className="animate-pulse">|</span>
+      </h1>
+      
+      <div className="w-full max-w-4xl">
+        <div className={assignments.length > 3 ? "max-h-80 overflow-y-auto" : ""}>
+          {assignments.map((assignment, index) => (
+            <div key={index} className="flex gap-4 mb-4 items-center">
+              <input
+                type="text"
+                placeholder="UBC Course"
+                className="flex-1 p-3 rounded bg-gray-800 text-white border border-gray-600"
+              />
+              <input
+                type="text"
+                placeholder="Assignment Name"
+                className="flex-1 p-3 rounded bg-gray-800 text-white border border-gray-600"
+              />
+              <input
+                type="date"
+                placeholder="Deadline"
+                className="flex-1 p-3 rounded bg-gray-800 text-white border border-gray-600"
+              />
+              <input
+                type="number"
+                placeholder="Commitment (hr/day)"
+                className="flex-1 p-3 rounded bg-gray-800 text-white border border-gray-600"
+              />
+              {assignments.length > 1 && (
+                <button
+                  onClick={() => deleteAssignment(index)}
+                  className="w-8 h-8 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition-colors flex items-center justify-center"
+                >
+                  ×
+                </button>
+              )}
             </div>
-            <div className="mb-4">npm install</div>
-            <div className="mb-2">
-              <span className="text-gray-500"># Start development server</span>
-            </div>
-            <div className="mb-4">npm run dev</div>
-            <div className="text-green-400">✓ Ready on http://localhost:3000</div>
-          </div>
+          ))}
         </div>
+        <button
+          onClick={addAssignment}
+          className="mt-4 w-10 h-10 bg-blue-600 text-white rounded-full text-xl hover:bg-blue-700 transition-colors"
+        >
+          +
+        </button>
       </div>
-    </div>
-  )
-}
-
-function FeatureCard({ title, description }: { title: string; description: string }) {
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-      <h3 className="text-xl font-bold mb-3">{title}</h3>
-      <p className="text-gray-600">{description}</p>
     </div>
   )
 }
